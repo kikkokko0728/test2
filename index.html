@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>せんせいからのもんだい</title>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <style>
+        .draggable {
+            position: absolute;
+            transition: transform 0.5s;
+        }
+
+        #shape1, #shape2, #shape3, #shape6 {
+            width: 100px;
+	    z-index: 1;
+        }
+        #shape4, #shape5 {
+            width: 200px;
+            height: 100px;
+            z-index: 0;
+        }
+
+        #shape1 { left: 163px; top: 200px; }
+        #shape2 { left: 358px; top: 200px; }
+        #shape3 { left: 260px; top: 100px; }
+        #shape4 { left: 62px; top: 200px; }
+        #shape5 { left: 160px; top: 100px; }
+        #shape6 { left: 260px; top: 200px; }
+
+        #canvas {
+            width: 600px;
+            height: 400px;
+            position: relative;
+            border: 1px solid #000;
+        }
+  
+        #answerImage {
+        z-index: 1000; /* 他の要素より前に表示させるための値 */
+        position: relative; /* z-index を適用するために position を設定 */
+        display: block; /* 画像をブロック要素として表示 */
+        margin-bottom: 10px; /* ボタングループとの間に余白を持たせる */
+    }
+
+    .button-group {
+        margin-bottom: 10px;
+    }
+
+    .button-group button {
+        margin-right: 10px;
+        padding: 1.5em 1em; /* このスタイルを追加 */
+    }
+    </style>
+</head>
+<body>
+<img src="C:/Users/y009/Desktop/pazzule/答え.png" id="answerImage">
+
+<div class="button-group">
+    <button id="rotateButton">くるん</button>
+    <button id="flipButton">ぱたん</button>
+    <button id="resetButton">さいしょから</button>
+</div>
+
+<div id="canvas">
+    <img src="C:/Users/y009/Desktop/pazzule/図形1.png" class="draggable" id="shape1">
+    <img src="C:/Users/y009/Desktop/pazzule/図形2.png" class="draggable" id="shape2">
+    <img src="C:/Users/y009/Desktop/pazzule/図形3.png" class="draggable" id="shape3">
+    <img src="C:/Users/y009/Desktop/pazzule/図形4.png" class="draggable" id="shape4">
+    <img src="C:/Users/y009/Desktop/pazzule/図形5.png" class="draggable" id="shape5">
+    <img src="C:/Users/y009/Desktop/pazzule/図形6.png" class="draggable" id="shape6">
+</div>
+
+
+<script>
+    let selectedImage = null;
+
+    const initialPositions = {
+        shape1: { left: '163px', top: '200px' },
+        shape2: { left: '358px', top: '200px' },
+        shape3: { left: '260px', top: '100px' },
+        shape4: { left: '62px', top: '200px' },
+        shape5: { left: '160px', top: '100px' },
+        shape6: { left: '260px', top: '200px' },
+    };
+
+    $(function() {
+        $(".draggable").draggable({ 
+            containment: "#canvas", 
+            scroll: false
+        }).on('mousedown', function() {
+            selectedImage = $(this);
+        });
+
+        $("#rotateButton").click(function() {
+            if (selectedImage) {
+                let currentRotation = parseInt(selectedImage.data('rotation') || 0);
+                currentRotation += 90;
+                let flipState = selectedImage.data('flip') || '';
+                selectedImage.css('transform', `rotate(${currentRotation}deg) ${flipState}`);
+                selectedImage.data('rotation', currentRotation);
+            } else {
+                alert('画像を触って選択してください。');
+            }
+        });
+
+        $("#flipButton").click(function() {
+            if (selectedImage) {
+                let flipState = selectedImage.data('flip') === 'scaleY(-1)' ? 'scaleY(1)' : 'scaleY(-1)';
+                let currentRotation = parseInt(selectedImage.data('rotation') || 0);
+                selectedImage.css('transform', `rotate(${currentRotation}deg) ${flipState}`);
+                selectedImage.data('flip', flipState);
+            } else {
+                alert('画像を触って選択してください。');
+            }
+        });
+
+        $("#resetButton").click(function() {
+            $(".draggable").each(function() {
+                const id = $(this).attr('id');
+                $(this).animate({ left: initialPositions[id].left, top: initialPositions[id].top })
+                       .css('transform', 'none')
+                       .data('rotation', 0)
+                       .data('flip', 'scaleY(1)');
+            });
+        });
+    });
+</script>
+
+</body>
+</html>
